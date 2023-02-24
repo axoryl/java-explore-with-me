@@ -32,6 +32,6 @@ public class StatsController {
     @ResponseStatus(HttpStatus.CREATED)
     public StatsDto addHit(@RequestBody StatsCreationDto statsDto) {
         log.info(">>> StatsController --> /hit --> requestBody: [" + statsDto + "]");
-        return service.addStats(statsDto);
+        return service.addHit(statsDto);
     }
 }
