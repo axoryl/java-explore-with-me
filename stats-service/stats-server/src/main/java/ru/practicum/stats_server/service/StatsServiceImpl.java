@@ -21,7 +21,7 @@ import static ru.practicum.stats_server.mapper.StatsMapper.mapToStatsDto;
 public class StatsServiceImpl implements StatsService {
 
     private final StatsRepository statsRepository;
-    private final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    private static final String DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     @Override
     public List<StatsShortDto> getStats(final String start, final String end,
