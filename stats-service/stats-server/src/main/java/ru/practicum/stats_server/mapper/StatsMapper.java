@@ -8,6 +8,10 @@ import ru.practicum.stats_server.model.ViewStats;
 
 public class StatsMapper {
 
+    private StatsMapper() {
+
+    }
+
     public static Stats mapToStats(final StatsCreationDto statsDto) {
         return Stats.builder()
                 .app(statsDto.getApp())

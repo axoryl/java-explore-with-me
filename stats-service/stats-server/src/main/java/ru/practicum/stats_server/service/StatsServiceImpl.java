@@ -25,7 +25,7 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<StatsShortDto> getStats(final String start, final String end,
-                                        final List<String> uris, final Boolean isUnique) {
+                                        final List<String> uris, final boolean isUnique) {
         final var timeStart = LocalDateTime.parse(start, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
         final var timeEnd = LocalDateTime.parse(end, DateTimeFormatter.ofPattern(DATE_TIME_PATTERN));
 
