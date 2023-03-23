@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.category.CategoryCreationDto;
 import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.service.CategoryService;
+import ru.practicum.util.StringTemplate;
 
 import javax.validation.Valid;
 
@@ -19,24 +20,25 @@ import javax.validation.Valid;
 public class AdminCategoryController {
 
     private final CategoryService categoryService;
+    private final String logTemplate = StringTemplate.ADMIN_CATEGORY_LOG;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CategoryDto saveCategory(@Valid @RequestBody CategoryCreationDto category) {
-        log.info(">>> ADMIN CATEGORY SAVE --> category: [" + category + "]");
+        log.info(String.format(logTemplate + "category: [%s]", "SAVE", category));
         return categoryService.saveCategory(category);
     }
 
     @PatchMapping("/{catId}")
     public CategoryDto updateCategory(@PathVariable Long catId, @Valid @RequestBody CategoryDto category) {
-        log.info(">>> ADMIN CATEGORY UPDATE --> category id: [" + catId + "] category: [" + category + "]");
+        log.info(String.format(logTemplate + "category id: [%d] category: [%s]", "UPDATE", catId, category));
         return categoryService.updateCategory(catId, category);
     }
 
     @DeleteMapping("/{catId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCategory(@PathVariable Long catId) {
-        log.info(">>> ADMIN CATEGORY DELETE --> category id: [" + catId + "]");
+        log.info(String.format(logTemplate + "category id: [%d]", "DELETE", catId));
         categoryService.deleteCategory(catId);
     }
 }

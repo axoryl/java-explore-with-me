@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventDto;
 import ru.practicum.dto.event.UpdateEventDto;
 import ru.practicum.service.EventService;
+import ru.practicum.util.StringTemplate;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 public class AdminEventController {
 
     private final EventService eventService;
+    private final String logTemplate = StringTemplate.ADMIN_EVENT_LOG;
 
     @GetMapping
     public List<EventDto> getAllEvents(@RequestParam(required = false) List<Long> users,
@@ -25,15 +27,15 @@ public class AdminEventController {
                                        @RequestParam(required = false) String rangeEnd,
                                        @RequestParam(required = false, defaultValue = "0") int from,
                                        @RequestParam(required = false, defaultValue = "10") int size) {
-        log.info("ADMIN EVENT GET ALL --> users id: [" + users + "] states: [" + states + "]" +
-                " categories id: [" + categories + "] range start: [" + rangeStart + "]" +
-                " range end: [" + rangeEnd + "] from: [" + from + "] size: [" + size + "]");
+        log.info(String.format(logTemplate + "users: [%s] states: [%s] categories: [%s] " +
+                        "range start: [%s] range end: [%s] from: [%d] size: [%d]",
+                "GET ALL EVENTS", users, states, categories, rangeStart, rangeEnd, from, size));
         return eventService.getAllEventsForAdmin(users, states, categories, rangeStart, rangeEnd, from, size);
     }
 
     @PatchMapping("/{eventId}")
     public EventDto updateEvent(@PathVariable Long eventId, @RequestBody UpdateEventDto updatedEvent) {
-        log.info("ADMIN EVENT UPDATE --> event: [" + updatedEvent + "] event id: [" + eventId + "]");
+        log.info(String.format(logTemplate + "event: [%s] event id: [%d]", "UPDATE", updatedEvent, eventId));
         return eventService.updateEventByAdmin(eventId, updatedEvent);
     }
 }

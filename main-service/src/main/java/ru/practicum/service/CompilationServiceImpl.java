@@ -12,6 +12,7 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.repository.CompilationRepository;
 import ru.practicum.repository.EventRepository;
+import ru.practicum.util.StringTemplate;
 
 import java.util.HashSet;
 import java.util.List;
@@ -40,8 +41,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto getCompilationById(final Long compId) {
         return mapToCompilationDto(compilationRepository.findById(compId).orElseThrow(
-                () -> new NotFoundException("Compilation with id=" + compId + " was not found",
-                        "The required object was not found."))
+                () -> new NotFoundException(StringTemplate.COMPILATION_NOT_FOUND, compId))
         );
     }
 
@@ -49,8 +49,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto saveCompilation(final CompilationCreationDto compilation) {
         if (compilation.getTitle().isBlank()) {
-            throw new BadRequestException("Field: title. Error: must not be blank. Value: null",
-                    "Incorrectly made request.");
+            throw new BadRequestException("Field: title. Error: must not be blank. Value: null");
         }
 
         final var events = eventRepository.findAllById(compilation.getEvents());
@@ -61,8 +60,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public CompilationDto updateCompilation(final CompilationUpdateDto compilation, Long compId) {
         final var compilationToUpdate = compilationRepository.findById(compId).orElseThrow(
-                () -> new NotFoundException("Compilation with id=" + compId + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.COMPILATION_NOT_FOUND, compId)
         );
 
         if (compilation.getPinned() != null) {
@@ -81,8 +79,7 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     public void deleteCompilation(final Long compId) {
         compilationRepository.findById(compId).orElseThrow(
-                () -> new NotFoundException("Compilation with id=" + compId + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.COMPILATION_NOT_FOUND, compId)
         );
         compilationRepository.deleteById(compId);
     }
