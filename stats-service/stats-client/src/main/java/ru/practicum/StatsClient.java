@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class StatsClient {
 
-    public static final String BASE_URL = "http://localhost:9090";
+    public static final String BASE_URL = "http://stats-server:9090";
     private final WebClient client;
 
     public StatsClient() {

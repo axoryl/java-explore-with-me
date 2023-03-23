@@ -10,9 +10,9 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=testPsword
 
-  ewm-db:
+  main-db:
     image: postgres:14-alpine
-    container_name: ewm-db
+    container_name: main-db
     ports:
       - "6542:5432"
     environment:
@@ -23,7 +23,7 @@ services:
   stats-server:
     build: stats-service/stats-server
     image: axoryl/explore-with-me_stats:v1
-    container_name: stats-server
+    container_name: ewm-stats-server
     ports:
       - "9090:9090"
     depends_on:
@@ -36,13 +36,13 @@ services:
   ewm-service:
     build: main-service
     image: axoryl/explore-with-me_main:v1
-    container_name: main-service
+    container_name: ewm-main-service
     ports:
       - "8080:8080"
     depends_on:
-      - ewm-db
+      - main-db
       - stats-server
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/exploreWM_main
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://main-db:5432/exploreWM_main
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=testPsword

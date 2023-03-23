@@ -22,7 +22,7 @@ public class StatsController {
     public List<StatsShortDto> getStats(@RequestParam String start,
                                         @RequestParam String end,
                                         @RequestParam List<String> uris,
-                                        @RequestParam(required = false, defaultValue = "false") Boolean unique) {
+                                        @RequestParam(required = false) boolean unique) {
         log.info(">>> StatsController --> /stats --> start: [" + start + "] end: [" + end + "]" +
                 " uris: " + uris + " unique: [" + unique + "]");
         return service.getStats(start, end, uris, unique);
