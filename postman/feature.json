@@ -1920,12 +1920,12 @@
 		{
 			"key": "subscriberId",
 			"value": "",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "uid",
 			"value": "",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "response",
@@ -1935,7 +1935,7 @@
 		{
 			"key": "subscriptionId",
 			"value": "",
-			"type": "string"
+			"type": "number"
 		},
 		{
 			"key": "eventId",
