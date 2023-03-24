@@ -3,6 +3,7 @@ package ru.practicum.controller.priv;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.EventShortDto;
 import ru.practicum.dto.subscription.SubscriptionDto;
@@ -15,19 +16,18 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequiredArgsConstructor
-@RequestMapping("/subscription")
+@RequestMapping(path = "/subscription", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PrivateSubscriptionController {
 
     private final SubscriptionService subscriptionService;
-    private final String logTemplate = StringTemplate.PRIVATE_SUBSCRIPTION_LOG;
+    private static final String logTemplate = StringTemplate.PRIVATE_SUBSCRIPTION_LOG;
 
     @GetMapping("/{subscriberId}")
     public List<SubscriptionShortDto> getAllSubscriptions(@PathVariable Long subscriberId,
                                                           @RequestParam(required = false, defaultValue = "true") boolean active,
                                                           @RequestParam(required = false, defaultValue = "0") int from,
                                                           @RequestParam(required = false, defaultValue = "10") int size) {
-        log.info(String.format(logTemplate + "subscriber id: [%d] from: [%d] size: [%d]",
-                "GET SUBSCRIPTIONS", subscriberId, from, size));
+        log.info(String.format(logTemplate, "GET SUBSCRIPTIONS"));
         return subscriptionService.getAllSubscriptions(subscriberId, active, from, size);
     }
 
@@ -36,8 +36,7 @@ public class PrivateSubscriptionController {
                                              @PathVariable Long uid,
                                              @RequestParam(required = false, defaultValue = "0") int from,
                                              @RequestParam(required = false, defaultValue = "10") int size) {
-        log.info(String.format(logTemplate + "subscriber id: [%d] user id: [%d] from: [%d] size: [%d]",
-                "GET USER EVENTS", subscriberId, uid, from, size));
+        log.info(String.format(logTemplate, "GET USER EVENTS"));
         return subscriptionService.getUserEvents(subscriberId, uid, from, size);
     }
 
@@ -46,34 +45,33 @@ public class PrivateSubscriptionController {
                                                               @PathVariable Long uid,
                                                               @RequestParam(required = false, defaultValue = "0") int from,
                                                               @RequestParam(required = false, defaultValue = "10") int size) {
-        log.info(String.format(logTemplate + "subscriber id: [%d] user id: [%d] from: [%d] size: [%d]",
-                "GET EVENTS WHERE USER PARTICIPATES", subscriberId, uid, from, size));
+        log.info(String.format(logTemplate, "GET EVENTS WHERE USER PARTICIPATES"));
         return subscriptionService.getEventsWhereUserParticipates(subscriberId, uid, from, size);
     }
 
     @GetMapping("/{uid}/subscribers")
     public Long getNumberOfSubscribers(@PathVariable Long uid) {
-        log.info(String.format(logTemplate + "user id: [%d]", "GET NUMBER OF SUBSCRIBERS", uid));
+        log.info(String.format(logTemplate, "GET NUMBER OF SUBSCRIBERS"));
         return subscriptionService.getNumberOfSubscribers(uid);
     }
 
     @PostMapping("/{subscriberId}/{uid}/subscribe")
     @ResponseStatus(HttpStatus.CREATED)
     public SubscriptionDto subscribe(@PathVariable Long subscriberId, @PathVariable Long uid) {
-        log.info(String.format(logTemplate + "subscriber id: [%d] user id: [%d]", "SUBSCRIBE", subscriberId, uid));
+        log.info(String.format(logTemplate, "SUBSCRIBE"));
         return subscriptionService.subscribe(subscriberId, uid);
     }
 
     @PatchMapping("/{subscriberId}/{uid}/unsubscribe")
     public SubscriptionDto unsubscribe(@PathVariable Long subscriberId, @PathVariable Long uid) {
-        log.info(String.format(logTemplate + "subscriber id: [%d] user id: [%d]", "UNSUBSCRIBE", subscriberId, uid));
+        log.info(String.format(logTemplate, "UNSUBSCRIBE"));
         return subscriptionService.unsubscribe(subscriberId, uid);
     }
 
     @DeleteMapping("/{subscriberId}/delete")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteInactiveSubscriptions(@PathVariable Long subscriberId) {
-        log.info(String.format(logTemplate + "subscriber id: [%d]", "DELETE INACTIVE SUBSCRIBE", subscriberId));
+        log.info(String.format(logTemplate, "DELETE INACTIVE SUBSCRIBE"));
         subscriptionService.deleteInactiveSubscriptions(subscriberId);
     }
 }

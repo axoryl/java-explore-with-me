@@ -2,6 +2,7 @@ package ru.practicum.controller.pub;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.StatsClient;
@@ -20,12 +21,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/events")
+@RequestMapping(path = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublicEventController {
 
     private final EventService eventService;
     private final StatsClient statsClient;
-    private final String logTemplate = StringTemplate.PUBLIC_EVENT_LOG;
+    private static final String logTemplate = StringTemplate.PUBLIC_EVENT_LOG;
 
     @GetMapping
     public List<EventDto> getAllEvents(@RequestParam(required = false, defaultValue = "") String text,
@@ -45,9 +46,7 @@ public class PublicEventController {
                 .uri(httpServletRequest.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build());
-        log.info(String.format(logTemplate + "text: [%s] categories: [%s] paid: [%b] range start: " +
-                        "[%s] range end: [%s] available: [%b] sort: [%s] from: [%d] size: [%d]",
-                "GET ALL", text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size));
+        log.info(String.format(logTemplate, "GET ALL"));
         return eventService.getAllEventsForUser(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
@@ -59,7 +58,7 @@ public class PublicEventController {
                 .uri(httpServletRequest.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build());
-        log.info(String.format(logTemplate + "event id: [%d]", "GET BY ID", eventId));
+        log.info(String.format(logTemplate, "GET BY ID"));
         return eventService.getEventById(eventId);
     }
 }

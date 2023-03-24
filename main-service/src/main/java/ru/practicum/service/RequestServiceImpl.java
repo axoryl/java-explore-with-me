@@ -51,7 +51,7 @@ public class RequestServiceImpl implements RequestService {
         final var created = LocalDateTime.now();
         requestRepository.findByRequesterAndEvent(uid, eventId)
                 .ifPresent(reqs -> {
-                    throw new ConflictException("Request already exists.", "Integrity constraint has been violated.");
+                    throw new ConflictException("Request already exists.");
                 });
 
         final var event = eventRepository.findById(eventId).orElseThrow(
