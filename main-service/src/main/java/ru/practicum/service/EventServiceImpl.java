@@ -23,6 +23,7 @@ import ru.practicum.model.event.UpdateEventState;
 import ru.practicum.model.request.Request;
 import ru.practicum.model.request.RequestStatus;
 import ru.practicum.repository.*;
+import ru.practicum.util.StringTemplate;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -123,8 +124,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getUserEventById(final Long uid, final Long eventId) {
         final var event = eventRepository.findByInitiatorIdAndId(uid, eventId).orElseThrow(
-                () -> new NotFoundException("Event with id=" + eventId + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, eventId)
         );
 
         if (event.getState() == EventState.PUBLISHED) {
@@ -143,8 +143,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto getEventById(final Long id) {
         final var event = eventRepository.findByIdAndState(id, EventState.PUBLISHED).orElseThrow(
-                () -> new NotFoundException("Event with id=" + id + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, id)
         );
 
         final var confirmedRequests = requestRepository.countRequestsByEventAndStatus(
@@ -164,8 +163,7 @@ public class EventServiceImpl implements EventService {
     public List<RequestDto> getRequests(Long uid, Long eventId) {
         final var event = eventRepository.findById(eventId).orElseThrow();
         if (!event.getInitiator().getId().equals(uid)) {
-            throw new BadRequestException("Only the owner can get information about requests.",
-                    "Incorrectly made request.");
+            throw new BadRequestException("Only the owner can get information about requests.");
         }
         return requestRepository.findAllByEvent(eventId).stream()
                 .map(RequestMapper::mapToRequestDto)
@@ -179,9 +177,7 @@ public class EventServiceImpl implements EventService {
 
         if (event.getEventDate().isBefore(createdOn.plusHours(2))) {
             throw new ConflictException(
-                    "Field: eventDate. Error: must contain a date that has not yet arrived " +
-                            "Value: " + event.getEventDate(),
-                    "For the requested operation the conditions are not met.");
+                    "Field: eventDate. Must contain a date that has not yet arrived Value: " + event.getEventDate());
         }
 
         final var location = locationRepository.save(mapToLocation(event.getLocation()));
@@ -196,27 +192,23 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto updateEventByAdmin(Long eventId, UpdateEventDto updatedEvent) {
         final var event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Event with id=" + eventId + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, eventId)
         );
 
         if (updatedEvent.getStateAction() == UpdateEventState.PUBLISH_EVENT
                 && event.getState() != EventState.PENDING) {
             throw new ConflictException(
-                    "Cannot publish the event because it's not in the right state: " + event.getState(),
-                    "For the requested operation the conditions are not met.");
+                    "Cannot publish the event because it's not in the right state: " + event.getState());
         }
         if (updatedEvent.getStateAction() == UpdateEventState.REJECT_EVENT
                 && event.getState() == EventState.PUBLISHED) {
             throw new ConflictException(
-                    "Cannot reject the event because it's not in the right state: " + event.getState(),
-                    "For the requested operation the conditions are not met.");
+                    "Cannot reject the event because it's not in the right state: " + event.getState());
         }
         if (updatedEvent.getEventDate() != null
                 && updatedEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(1))) {
             throw new ConflictException(
-                    "The start date of the edited event must be no earlier than one hour from the publication date",
-                    "For the requested operation the conditions are not met.");
+                    "The start date of the edited event must be no earlier than one hour from the publication date");
         }
 
         updateEventFields(event, updatedEvent);
@@ -227,20 +219,17 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventDto updateEventByUser(Long uid, Long eventId, UpdateEventDto updatedEvent) {
         final var event = eventRepository.findByInitiatorIdAndId(uid, eventId).orElseThrow(
-                () -> new NotFoundException("Event with id=" + eventId + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, eventId)
         );
 
         if (event.getState() == EventState.PUBLISHED) {
-            throw new ConflictException("Only pending or canceled events can be changed",
-                    "For the requested operation the conditions are not met.");
+            throw new ConflictException("Only pending or canceled events can be changed");
         }
 
         if (updatedEvent.getEventDate() != null
                 && updatedEvent.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
             throw new ConflictException(
-                    "The start date of the edited event must be no earlier than two hour from the publication date",
-                    "For the requested operation the conditions are not met.");
+                    "The start date of the edited event must be no earlier than two hour from the publication date");
         }
 
         updateEventFields(event, updatedEvent);
@@ -278,8 +267,7 @@ public class EventServiceImpl implements EventService {
         }
         if (updateEventDto.getCategory() != null) {
             final var category = categoryRepository.findById(updateEventDto.getCategory()).orElseThrow(
-                    () -> new NotFoundException("Category with id=" + updateEventDto.getCategory() + " was not found",
-                            "Incorrectly made request.")
+                    () -> new NotFoundException(StringTemplate.CATEGORY_NOT_FOUND, updateEventDto.getCategory())
             );
             eventToUpdate.setCategory(category);
         }

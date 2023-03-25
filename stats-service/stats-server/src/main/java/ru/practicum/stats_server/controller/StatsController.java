@@ -23,15 +23,15 @@ public class StatsController {
                                         @RequestParam String end,
                                         @RequestParam List<String> uris,
                                         @RequestParam(required = false) boolean unique) {
-        log.info(">>> StatsController --> /stats --> start: [" + start + "] end: [" + end + "]" +
-                " uris: " + uris + " unique: [" + unique + "]");
+        log.info(String.format(">>> STATS CONTROLLER GET STATS --> start: [%s] end: [%s] uris: [%s] unique: [%b]",
+                start, end, uris, unique));
         return service.getStats(start, end, uris, unique);
     }
 
     @PostMapping("/hit")
     @ResponseStatus(HttpStatus.CREATED)
     public StatsDto addHit(@RequestBody StatsCreationDto statsDto) {
-        log.info(">>> StatsController --> /hit --> requestBody: [" + statsDto + "]");
+        log.info(String.format(">>> STATS CONTROLLER HIT --> requestBody: [%s]", statsDto));
         return service.addHit(statsDto);
     }
 }

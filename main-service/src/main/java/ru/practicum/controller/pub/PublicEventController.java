@@ -2,12 +2,14 @@ package ru.practicum.controller.pub;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.StatsClient;
 import ru.practicum.dto.StatsCreationDto;
 import ru.practicum.dto.event.EventDto;
 import ru.practicum.service.EventService;
+import ru.practicum.util.StringTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.Positive;
@@ -19,11 +21,12 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @Validated
-@RequestMapping("/events")
+@RequestMapping(path = "/events", produces = MediaType.APPLICATION_JSON_VALUE)
 public class PublicEventController {
 
     private final EventService eventService;
     private final StatsClient statsClient;
+    private static final String logTemplate = StringTemplate.PUBLIC_EVENT_LOG;
 
     @GetMapping
     public List<EventDto> getAllEvents(@RequestParam(required = false, defaultValue = "") String text,
@@ -43,9 +46,7 @@ public class PublicEventController {
                 .uri(httpServletRequest.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build());
-        log.info(">>> PUBLIC EVENT GET ALL --> text: [" + text + "] categories id: [" + categories + "]" +
-                " paid: [" + paid + "] range start: [" + rangeStart + "] range end: [" + rangeEnd + "]" +
-                " available: [" + onlyAvailable + "] sort: [" + sort + "] from: [" + from + "] size: [" + size + "]");
+        log.info(String.format(logTemplate, "GET ALL"));
         return eventService.getAllEventsForUser(text, categories, paid, rangeStart, rangeEnd, onlyAvailable, sort, from, size);
     }
 
@@ -57,7 +58,7 @@ public class PublicEventController {
                 .uri(httpServletRequest.getRequestURI())
                 .timestamp(LocalDateTime.now())
                 .build());
-        log.info(">>> PUBLIC EVENT GET BY ID --> event id: [" + eventId + "]");
+        log.info(String.format(logTemplate, "GET BY ID"));
         return eventService.getEventById(eventId);
     }
 }

@@ -9,6 +9,7 @@ import ru.practicum.dto.category.CategoryDto;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.repository.CategoryRepository;
+import ru.practicum.util.StringTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,8 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto getCategoryById(final Long catId) {
         final var category = categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException("Category with id=" + catId + " was not found",
-                        "Incorrectly made request.")
+                () -> new NotFoundException(StringTemplate.CATEGORY_NOT_FOUND, catId)
         );
         return mapToCategoryDto(category);
     }
@@ -51,8 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto updateCategory(final Long catId, final CategoryDto category) {
         final var categoryToUpdate = categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException("Category with id=" + catId + " was not found",
-                        "The required object was not found."));
+                () -> new NotFoundException(StringTemplate.CATEGORY_NOT_FOUND, catId));
         categoryToUpdate.setName(category.getName());
         categoryRepository.save(categoryToUpdate);
 
@@ -63,8 +62,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(final Long catId) {
         categoryRepository.findById(catId).orElseThrow(
-                () -> new NotFoundException("Category with id=" + catId + " was not found",
-                        "The required object was not found."));
+                () -> new NotFoundException(StringTemplate.CATEGORY_NOT_FOUND, catId));
         categoryRepository.deleteById(catId);
     }
 }

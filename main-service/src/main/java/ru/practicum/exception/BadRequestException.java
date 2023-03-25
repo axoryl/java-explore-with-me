@@ -2,14 +2,13 @@ package ru.practicum.exception;
 
 public class BadRequestException extends RuntimeException {
 
-    private final String reason;
+    private static final String REASON_MSG = "Incorrectly made request.";
 
-    public BadRequestException(String msg, String reason) {
+    public BadRequestException(String msg) {
         super(msg);
-        this.reason = reason;
     }
 
     public String getReason() {
-        return reason;
+        return REASON_MSG;
     }
 }

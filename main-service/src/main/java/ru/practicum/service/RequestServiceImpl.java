@@ -16,6 +16,7 @@ import ru.practicum.model.request.RequestStatus;
 import ru.practicum.repository.EventRepository;
 import ru.practicum.repository.RequestRepository;
 import ru.practicum.repository.UserRepository;
+import ru.practicum.util.StringTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,8 +38,7 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public List<RequestDto> getAllUserRequests(final Long uid) {
         userRepository.findById(uid).orElseThrow(
-                () -> new NotFoundException("User with id=" + uid + " was not found",
-                        "The required object was not found."));
+                () -> new NotFoundException(StringTemplate.USER_NOT_FOUND, uid));
 
         return requestRepository.findAllByRequester(uid).stream()
                 .map(RequestMapper::mapToRequestDto)
@@ -51,26 +51,22 @@ public class RequestServiceImpl implements RequestService {
         final var created = LocalDateTime.now();
         requestRepository.findByRequesterAndEvent(uid, eventId)
                 .ifPresent(reqs -> {
-                    throw new ConflictException("Request already exists.", "Integrity constraint has been violated.");
+                    throw new ConflictException("Request already exists.");
                 });
 
         final var event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Event with id=" + eventId + " was not found.",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, eventId)
         );
 
         userRepository.findById(uid).orElseThrow(
-                () -> new NotFoundException("User with id=" + uid + " was not found.",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.USER_NOT_FOUND, uid)
         );
 
         if (event.getInitiator().getId().equals(uid)) {
-            throw new ConflictException("The event initiator cannot add a request to participate in his event.",
-                    "For the requested operation the conditions are not met.");
+            throw new ConflictException("The event initiator cannot add a request to participate in his event.");
         }
         if (event.getState() != EventState.PUBLISHED) {
-            throw new ConflictException("Participation in an unpublished event is not possible.",
-                    "For the requested operation the conditions are not met.");
+            throw new ConflictException("Participation in an unpublished event is not possible.");
         }
 
         final var request = Request.builder()
@@ -88,8 +84,7 @@ public class RequestServiceImpl implements RequestService {
 
         if (!event.getParticipantLimit().equals(0)
                 && Objects.equals(event.getParticipantLimit(), numberOfRequests)) {
-            throw new ConflictException("Participation request limit reached.",
-                    "For the requested operation the conditions are not met.");
+            throw new ConflictException("Participation request limit reached.");
         } else {
             request.setStatus(RequestStatus.CONFIRMED);
             return mapToRequestDto(requestRepository.save(request));
@@ -100,12 +95,11 @@ public class RequestServiceImpl implements RequestService {
     @Override
     public RequestDto cancelRequest(final Long uid, final Long requestId) {
         final var request = requestRepository.findById(requestId).orElseThrow(
-                () -> new NotFoundException("Request with id=" + requestId + " was not found.",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.REQUEST_NOT_FOUND, requestId)
         );
 
         if (!request.getRequester().equals(uid)) {
-            throw new BadRequestException("Only the owner can cancel the request.", "Incorrectly made request.");
+            throw new BadRequestException("Only the owner can cancel the request.");
         }
 
         request.setStatus(RequestStatus.CANCELED);
@@ -118,15 +112,13 @@ public class RequestServiceImpl implements RequestService {
     public UpdateRequestsResultDto updateRequestsStatus(final Long uid, final Long eventId,
                                                         final UpdateRequestStatusDto updateRequestStatusDto) {
         final var event = eventRepository.findById(eventId).orElseThrow(
-                () -> new NotFoundException("Event with id=" + eventId + " was not found.",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.EVENT_NOT_FOUND, eventId)
         );
 
         final var requests = requestRepository.findAllById(updateRequestStatusDto.getRequestIds()).stream()
                 .peek(r -> {
                     if (r.getStatus() != RequestStatus.PENDING)
-                        throw new ConflictException("The request must be in PENDING status.",
-                                "For the requested operation the conditions are not met.");
+                        throw new ConflictException("The request must be in PENDING status.");
                 })
                 .map(RequestMapper::mapToRequestDto)
                 .collect(Collectors.toList());
@@ -149,8 +141,7 @@ public class RequestServiceImpl implements RequestService {
         final var participantLimit = event.getParticipantLimit();
 
         if (participantLimit > 0 && Objects.equals(participantLimit, numberOfRequests)) {
-            throw new ConflictException("Participation request limit reached.",
-                    "For the requested operation the conditions are not met.");
+            throw new ConflictException("Participation request limit reached.");
         }
 
         if (participantLimit.equals(0)) {

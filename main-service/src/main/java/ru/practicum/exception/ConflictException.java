@@ -2,14 +2,13 @@ package ru.practicum.exception;
 
 public class ConflictException extends RuntimeException {
 
-    private final String reason;
+    private static final String REASON_MSG = "For the requested operation the conditions are not met.";
 
-    public ConflictException(String msg, String reason) {
+    public ConflictException(String msg) {
         super(msg);
-        this.reason = reason;
     }
 
     public String getReason() {
-        return reason;
+        return REASON_MSG;
     }
 }

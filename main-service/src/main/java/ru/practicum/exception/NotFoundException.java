@@ -2,14 +2,17 @@ package ru.practicum.exception;
 
 public class NotFoundException extends RuntimeException {
 
-    private final String reason;
+    private static final String REASON_MSG = "The required object was not found.";
 
-    public NotFoundException(String msg, String reason) {
+    public NotFoundException(String msg) {
         super(msg);
-        this.reason = reason;
+    }
+
+    public NotFoundException(String stringTemplate, Long id) {
+        super(String.format(stringTemplate, id));
     }
 
     public String getReason() {
-        return reason;
+        return REASON_MSG;
     }
 }

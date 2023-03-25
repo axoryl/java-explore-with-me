@@ -9,6 +9,7 @@ import ru.practicum.dto.user.UserDto;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.mapper.UserMapper;
 import ru.practicum.repository.UserRepository;
+import ru.practicum.util.StringTemplate;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,8 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long uid) {
         userRepository.findById(uid).orElseThrow(
-                () -> new NotFoundException("User with id=" + uid + " was not found",
-                        "The required object was not found.")
+                () -> new NotFoundException(StringTemplate.USER_NOT_FOUND, uid)
         );
         userRepository.deleteById(uid);
     }
