@@ -49,3 +49,8 @@ API для администратора
 - спецификация основного сервиса: ewm-main-service-spec.json;
 - спецификация сервиса статистики: ewm-stats-service.json.
 - спецификация для дополнительной фичи (подписка на пользователей): feature.json.
+
+
+Запуск контейнера
+- mvn clean package
+- docker-compose up
